@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>enkel chat</title>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	
+	<style>
+		body{
+			margin-top:30px;
+			height:80vh;
+		}
+		#messageArea{
+			display:none;
+			height:70vh;
+		}
+		#chat div{
+			margin-bottom: 2px;
+			padding:5px;
+		}
+		#chat{
+			max-height: 60vh;
+			overflow-y: scroll;
+		}
+	</style>
+</head>
+<body>
+	<div class ="container">
+		<div id="userFormArea" class="row">
+			<div class ="col-md-12">
+				<form id="userForm">
+					<div class="form-group">
+						<h3>Your new name is</h3>
+						<input class="form-control" id="username" readonly value="bob" />
+						<br />
+						<input type="submit" class="btn btn-primary" value="accept" />
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id="messageArea" class="row">
+			<div class="sticky">
+				<div class="col-md-4">
+					<div class ="well">
+						<h3>Online users</h3>
+						<ul class ="list-group" id="users"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="chat" id="chat">
+				</div>
+				<form id="messageForm">
+					<div class="form-group">
+						<label></label>
+						<form>
+							<textarea class="form-control" id="message"></textarea>
+							<br />
+							<button type="submit" class="btn btn-primary" value="Send Message"> Enter Message</button>
+						</form>
+						
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function(){
+				var socket = io.connect();
+				var $messageForm = $('#messageForm');
+				var $message = $('#message');
+				var $chat = $('#chat');
+				var $messageArea = $('#messageArea');
+				var $userFormArea = $('#userFormArea');
+				var $userForm = $('#userForm');
+				var $users = $('#users');
+				var $username = $('#username');
+
+				//send message with enter
+				$message.keypress(function(e){
+					if (e.keyCode == 13)
+					{
+						socket.emit('send message', $message.val());
+						$message.val('');
+					}
+				});
+
+				//send message with button click
+				$messageForm.submit(function(e){
+					e.preventDefault();
+					socket.emit('send message', $message.val());
+					$message.val('');
+				});
+
+				//recieve new message
+				socket.on('new message', function(data){
+					var nametag = '';
+					if (data.user) nametag = '<strong>'+ data.user +'</strong>: ';
+					$chat.append('<div class="well">'+ nametag + data.msg + '</div>');
+					scrollDown();
+				});
+
+				//new user upon accepting new name
+				$userForm.submit(function(e){
+					e.preventDefault();
+					socket.emit('new user', $username.val(), function(data){
+						
+					$userFormArea.hide();
+					$messageArea.show();
+						
+					});
+					$username.val('');
+				});
+
+				//get users list
+				socket.on('get users', function(data){
+					var html = '';
+					for (i=0; i<data.length; i++){
+						html += '<li class="list-group-item">'+data[i]+'</li>';
+					}
+
+					$users.html(html);
+
+				});
+
+				//get random name
+				function getRandomName(){
+					var namesList = ['Bob','Alice', 'Charlie', 'Kåre', 'Morten', 'Jørn', 'Herjus', 'Laila', 'Inge', "Emma", 'Leif', 'Alvina', 'Emeline', 'Conrad', 'Gertha', 'Tammi', 'Sandi', 'Hannelore',' Shayla', 'Jere', 'Santos',' Newton', 'Pamila', 'Hassie', 'Lashunda', 'Delena', 'Annalee', 'Hugh', 'Alfredia', 'Tamiko', 'Crystle', 'Theresia', 'Brinda', 'Rikki', 'Earle', 'Erika', 'Honey', 'Franklin', 'Hermelinda', 'Whitney', 'Noel', 'Damion', 'Wendy', 'Vesta', 'Kia', 'Reda', 'Loan', 'Salome', 'Leisa', 'Vince', 'Sherice', 'Royce', 'Armandina', 'Amado', 'Marlo', 'Chandra', 'Darlena', 'Pearle', 'Kendal'];
+					return namesList[Math.floor(Math.random() * namesList.length)];
+				}
+
+				var newUserName = getRandomName();
+
+				document.getElementById("username").value = newUserName; //replace keyholdername
+
+				//scroll down
+				function scrollDown(){
+				    var element = document.getElementById("chat");
+				    element.scrollTop = element.scrollHeight;
+				}
+			});
+	</script>
+</body>
+</html>
+
