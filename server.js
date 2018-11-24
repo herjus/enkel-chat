@@ -30,13 +30,13 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('send message', function(data){
-		var safeData = encodeURI(data);
+		var safeData = escapeHtml(data);
 		console.log(safeData);
 		io.sockets.emit('new message', {msg: safeData, user: socket.username});
 	});
 
 	socket.on('new user', function(data, callback){
-		var safeData = encodeURI(data);
+		var safeData = escapeHtml(data);
 		io.sockets.emit('new message', {msg: '*' + safeData + ' has joined the chat.'});
 		console.log(safeData);
 		callback(true);
@@ -47,5 +47,22 @@ io.sockets.on('connection', function(socket){
 	
 	function updateUsernames(){
 		io.sockets.emit('get users', users);
+	}
+
+	var entityMap = {
+	  '&': '&amp;',
+	  '<': '&lt;',
+	  '>': '&gt;',
+	  '"': '&quot;',
+	  "'": '&#39;',
+	  '/': '&#x2F;',
+	  '`': '&#x60;',
+	  '=': '&#x3D;'
+	};
+
+	function escapeHtml (string) {
+	  return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+	    return entityMap[s];
+	  });
 	}
 });

@@ -98,7 +98,7 @@
 				socket.on('new message', function(data){
 					var nametag = '';
 					if (data.user) nametag = '<strong>'+ data.user +'</strong>: ';
-					$chat.append('<div class="well">'+ nametag + data.msg + '</div>');
+					$chat.append('<div class="well" type="text">'+ nametag + data.msg + '</div>');
 					scrollDown();
 				});
 
@@ -127,7 +127,7 @@
 
 				//get random name
 				function getRandomName(){
-					var namesList = ['Bob','Alice', 'Charlie', 'Kåre', 'Morten', 'Jørn', 'Herjus', 'Laila', 'Inge', "Emma", 'Leif', 'Alvina', 'Emeline', 'Conrad', 'Gertha', 'Tammi', 'Sandi', 'Hannelore',' Shayla', 'Jere', 'Santos',' Newton', 'Pamila', 'Hassie', 'Lashunda', 'Delena', 'Annalee', 'Hugh', 'Alfredia', 'Tamiko', 'Crystle', 'Theresia', 'Brinda', 'Rikki', 'Earle', 'Erika', 'Honey', 'Franklin', 'Hermelinda', 'Whitney', 'Noel', 'Damion', 'Wendy', 'Vesta', 'Kia', 'Reda', 'Loan', 'Salome', 'Leisa', 'Vince', 'Sherice', 'Royce', 'Armandina', 'Amado', 'Marlo', 'Chandra', 'Darlena', 'Pearle', 'Kendal'];
+					var namesList = ['Bob','Alice', 'Charlie', 'Kåre', 'Morten', 'Jørn', 'Herjus', 'Laila', 'Inge', "Emma", 'Leif', 'Alvina', 'Emeline', 'Conrad', 'Gertha', 'Tammi', 'Sandi', 'Hannelore', 'Shayla', 'Jere', 'Santos','Newton', 'Pamila', 'Hassie', 'Lashunda', 'Delena', 'Annalee', 'Hugh', 'Alfredia', 'Tamiko', 'Crystle', 'Theresia', 'Brinda', 'Rikki', 'Earle', 'Erika', 'Honey', 'Franklin', 'Hermelinda', 'Whitney', 'Noel', 'Damion', 'Wendy', 'Vesta', 'Kia', 'Reda', 'Loan', 'Salome', 'Leisa', 'Vince', 'Sherice', 'Royce', 'Armandina', 'Amado', 'Marlo', 'Chandra', 'Darlena', 'Pearle', 'Kendal'];
 					return namesList[Math.floor(Math.random() * namesList.length)];
 				}
 
