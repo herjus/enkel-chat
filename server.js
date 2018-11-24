@@ -1,5 +1,7 @@
-var express = require('express');
+const express = require('express');
+const helmet = require('helmet');
 var app = express();
+app.use(helmet());
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 users = [];
@@ -17,6 +19,7 @@ io.sockets.on('connection', function(socket){
 	console.log('Connected: %s sockets connected', connections.length);
 
 	socket.on('disconnect', function(data){
+
 		if(socket.username){
 			io.sockets.emit('new message', {msg: '*' + socket.username + ' has left the chat.'});
 			users.splice(users.indexOf(socket.username, 1))
@@ -27,15 +30,17 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('send message', function(data){
-		console.log(data);
-		io.sockets.emit('new message', {msg: data, user: socket.username});
+		var safeData = encodeURI(data);
+		console.log(safeData);
+		io.sockets.emit('new message', {msg: safeData, user: socket.username});
 	});
 
 	socket.on('new user', function(data, callback){
-		io.sockets.emit('new message', {msg: '*' + data + ' has joined the chat.'});
-		console.log(data);
-		callback(false);
-		socket.username = data;
+		var safeData = encodeURI(data);
+		io.sockets.emit('new message', {msg: '*' + safeData + ' has joined the chat.'});
+		console.log(safeData);
+		callback(true);
+		socket.username = safeData;
 		users.push(socket.username);
 		updateUsernames();
 	});
